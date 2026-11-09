@@ -1,34 +1,183 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Movie Hub</title>
-    <!-- <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script> -->
-    <link rel="stylesheet" href="index.css">
+    <title>CineScope | Discover Movies</title>
+    <!-- Tailwind CSS v4 -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 </head>
-<body>
-    <h1>Movie Hub</h1>
 
-    <div>
-        <form action="" id="searchMovie">
-            <input id="movieInput" type="text" placeholder="Search Movie Title (e.g. Inception, The Matrix)...">
+<body class="bg-[#0b0b10] text-white min-h-screen">
 
-            <button>Search</button>
-        </form>
-    </div>
+    <!-- =========================
+         NAVBAR
+    ========================== -->
 
-    <div id="movieHub">
-    <!-- Sample Data to put inside JS
-        <div>
-            <img src="https://images.pexels.com/photos/18888233/pexels-photo-18888233.jpeg" alt="" height="200">
+    <header class="border-b border-white/10">
+
+        <div class="max-w-7xl mx-auto px-6 py-5 flex justify-between items-center">
+
+            <!-- Logo -->
+            <div class="text-2xl font-extrabold tracking-widest">
+                CINE<span class="text-purple-500">SCOPE</span>
+            </div>
+
+            <!-- Navigation -->
+            <nav class="flex gap-7 text-sm font-medium">
+
+                <a href="#" class="text-purple-400">
+                    Discover
+                </a>
+
+                <a href="#movieSection" class="text-gray-400 hover:text-white transition">
+                    Movies
+                </a>
+
+            </nav>
+
         </div>
-        <div>
-            <h3>Shershaah</h3>
-            <p>2021</p>
+
+    </header>
+
+
+    <!-- =========================
+         MAIN CONTENT
+    ========================== -->
+
+    <main>
+
+        <!-- HERO SECTION -->
+
+        <section class="relative overflow-hidden bg-gradient-to-b from-purple-950/60 via-[#17101f] to-[#0b0b10]">
+
+            <div class="max-w-5xl mx-auto px-6 py-15 text-center">
+
+                <span class="text-purple-400 text-xs font-bold tracking-[0.3em]">
+                    YOUR CINEMATIC UNIVERSE
+                </span>
+
+                <h1 class="text-4xl sm:text-5xl md:text-6xl font-extrabold leading-tight mt-6">
+
+                    Discover Your Next
+
+                    <span class="block text-purple-500">
+                        Favourite Movie.
+                    </span>
+
+                </h1>
+
+                <p class="text-gray-400 max-w-xl mx-auto mt-6 leading-relaxed">
+                    Explore thousands of movies, discover hidden gems
+                    and find something worth watching.
+                </p>
+
+
+                <!-- SEARCH FORM -->
+
+                <form id="searchMovie"
+                    class="flex max-w-2xl mx-auto mt-10 p-2 bg-[#191923] border border-white/10 rounded-xl gap-2">
+
+                    <input type="text" id="movieInput" placeholder="Search movies... (e.g. Inception)"
+                        autocomplete="off"
+                        class="flex-1 min-w-0 bg-transparent outline-none px-4 py-3 text-white placeholder:text-gray-500">
+
+                    <button type="submit"
+                        class="bg-purple-600 hover:bg-purple-700 px-7 py-3 rounded-lg font-semibold transition cursor-pointer">
+                        Search
+                    </button>
+
+                </form>
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================
+             MOVIE SECTION
+        ========================== -->
+
+        <section id="movieSection" class="max-w-7xl mx-auto px-6 py-5">
+
+            <!-- Section Heading -->
+
+            <div class="mb-10">
+
+                <span class="text-purple-400 text-xs font-bold tracking-[0.25em]">
+                    EXPLORE COLLECTION
+                </span>
+
+                <h2 class="text-3xl font-bold mt-3">
+                    Discover Movies
+                </h2>
+
+            </div>
+
+
+            <!-- MOVIE GRID -->
+
+            <div id="movieHub" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
+
+                <!-- Initial Welcome Message -->
+
+                <div
+                    class="col-span-full text-center py-20 bg-[#13131c] border border-dashed border-white/10 rounded-xl">
+
+                    <h3 class="text-xl font-semibold">
+                        Ready for movie night?
+                    </h3>
+
+                    <p class="text-gray-400 text-sm mt-3">
+                        Search for your favourite movie to get started.
+                    </p>
+
+                </div>
+
+            </div>
+
+            <!-- Pagination  -->
+            <div id="pagination" class="hidden flex justify-center items-center gap-4 mt-10 mb-8">
+                <button id="prevBtn"
+                    class="px-5 py-2 rounded-lg bg-[#252533] text-white hover:bg-purple-600 transition disabled:opacity-40 disabled:cursor-not-allowed">
+                    Previous
+                </button>
+
+                <span id="pageInfo" class="text-gray-300 text-sm"></span>
+
+                <button id="nextBtn"
+                    class="px-5 py-2 rounded-lg bg-purple-600 text-white hover:bg-purple-500 transition disabled:opacity-40 disabled:cursor-not-allowed">
+                    Next
+                </button>
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- =========================
+         FOOTER
+    ========================== -->
+
+    <footer class="border-t border-white/10 mt-10">
+
+        <div class="max-w-7xl mx-auto px-6 py-7 text-center">
+
+            <p class="text-gray-500 text-sm">
+                © 2026 CineScope. Made for movie lovers.
+            </p>
+
         </div>
-    -->
-    </div>
+
+    </footer>
+
+
+    <!-- JAVASCRIPT -->
+
     <script src="script.js"></script>
+
 </body>
+
 </html>
