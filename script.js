@@ -2,15 +2,24 @@ const movieForm = document.querySelector("#searchMovie");           // Form Sele
 const movieInput = document.querySelector("#movieInput");           // Form Input Field Selection
 const movieHub = document.querySelector("#movieHub")                // Movie Display Parent Div Selection
 
-const pagination = document.querySelector("#pagination")
+const pagination = document.querySelector("#pagination")            // Pagination Selection
 const prevBtn = document.querySelector("#prevBtn")
 const nextBtn = document.querySelector("#nextBtn")
 const pageInfo = document.querySelector("#pageInfo")
 
+const activeFilters = document.querySelector("#activeFilters")
+const filterSection = document.querySelector("#filterSection")      // Type and Year Filter containing Div
+
+const filterTags = document.querySelector("#filterTags")            // Filtered values containing div
+const showYearFilter = document.querySelector("#showYearFilter")
+const showTypeFilter = document.querySelector("#showTypeFilter")
+
 
 let totalResult = 0
-let currentPage = 0
+let currentPage = 1
 let currentQuery = null
+let currentType = null
+let currentYear = null
 
 movieForm.addEventListener("submit", (e) => {
     e.preventDefault();
@@ -30,18 +39,60 @@ movieForm.addEventListener("submit", (e) => {
     }
     // console.log(query);
     currentQuery = query
+    activeFilters.classList.add("hidden")
+    console.log(filterTags);
+
+    typeFilter.classList.remove("hidden")
+    yearFilter.classList.remove("hidden")
     searchMovies(query);
 })
 
-prevBtn.addEventListener('click',(e)=>{
+prevBtn.addEventListener('click', (e) => {
     if (!currentQuery) return;
-    searchMovies(currentQuery,currentPage-1)
+    searchMovies(currentQuery, currentPage - 1, currentType, currentYear)
 })
-nextBtn.addEventListener("click", (e)=>{
+nextBtn.addEventListener("click", (e) => {
     if (!currentQuery) return;
-    searchMovies(currentQuery,currentPage+1)
+    searchMovies(currentQuery, currentPage + 1, currentType, currentYear)
 })
-async function searchMovies(movieName, page = 1) {
+
+filterSection.addEventListener('change', (e) => {
+    if (!currentQuery) return;
+
+    const yearFilter = e.target.closest('#yearFilter')
+    const typeFilter = e.target.closest('#typeFilter')
+
+    currentPage = 1
+
+    activeFilters.classList.remove("hidden")
+
+
+    if (yearFilter) {
+        const year = yearFilter.value
+        currentYear = year
+
+        showYearFilter.textContent = year || "";
+        showYearFilter.classList.toggle("hidden", !year)
+    } 
+
+    if (typeFilter) {
+        const type = typeFilter.value
+        currentType = type
+
+        showTypeFilter.textContent = type || "";
+        showTypeFilter.classList.toggle("hidden", !type)
+    } 
+    
+    if (!currentYear && !currentType){
+        activeFilters.classList.add("hidden")
+    }
+
+    searchMovies(currentQuery, currentPage, currentType, currentYear)
+})
+
+
+
+async function searchMovies(movieName, page = 1, type = null, year) {
     try {
         // Given Here Tailwind Default rounding loading animmation
         movieHub.innerHTML = `
@@ -50,7 +101,7 @@ async function searchMovies(movieName, page = 1) {
             <p class="text-gray-400">Finding your movies...</p>
         </div>
         `
-        let response = await fetch(`https://www.omdbapi.com/?apikey=3c8289a9&s=${movieName}&page=${page}`)
+        let response = await fetch(`https://www.omdbapi.com/?apikey=3c8289a9&s=${movieName}&page=${page}${type ? `&type=${type}` : ""}${year ? `&y=${year}` : ""}`)
         // check if the http error 404/500
         if (!response.ok) {
             throw new Error(`Http Error! Status: ${response.status}`)
@@ -61,10 +112,10 @@ async function searchMovies(movieName, page = 1) {
         currentPage = page
         // console.log(totalResult,displayedResult);
 
-        if (data.Response === "True"){
+        if (data.Response === "True") {
             displayMovies(data["Search"]);
             paginationSet(page)
-        } else{
+        } else {
             movieHub.innerHTML = `
             <div class="col-span-full text-center py-12">
                 <div class="text-4xl mb-4">🎬</div>
@@ -97,7 +148,7 @@ async function searchMovies(movieName, page = 1) {
 function displayMovies(data) {
     movieHub.innerHTML = "";
     data.forEach(movie => {
-        console.log(movie);
+        // console.log(movie);
         const div = document.createElement("div")
         div.dataset.imdbID = movie.imdbID
         div.setAttribute("class", `
@@ -115,8 +166,8 @@ function displayMovies(data) {
                 <img
                     class="w-full h-full object-cover group-hover:scale-102 transition-transform duration-400"
                     src="${movie.Poster === "N/A"
-                        ? "https://placehold.co/300x450/171723/ffffff?text=No+Poster"
-                        : movie.Poster}"
+                ? "https://placehold.co/300x450/171723/ffffff?text=No+Poster"
+                : movie.Poster}"
                     alt="${movie.Title}"
                     onerror="this.onerror=null; this.src='https://placehold.co/300x450/171723/ffffff?text=No+Poster'"
                 >
@@ -141,14 +192,14 @@ function displayMovies(data) {
 
             </div>
         `;
-    
+
         movieHub.append(div)
     });
 
 }
 
 // Want to Give Event Listener to each div...Use concept of Event Listener 
-movieHub.addEventListener('click',(e)=>{
+movieHub.addEventListener('click', (e) => {
     e.stopPropagation();
     const movieCard = e.target.closest(".movie-card")
 
@@ -166,18 +217,18 @@ movieHub.addEventListener('click',(e)=>{
 // ! button.disabled = true ; disabled the button working
 
 
-function paginationSet(page){
+function paginationSet(page) {
     pagination.classList.remove("hidden")
-    let pageNeeded = Math.ceil(Number(totalResult)/10);                     // e.g. 102 result - 11 pages
+    let pageNeeded = Math.ceil(Number(totalResult) / 10);                     // e.g. 102 result - 11 pages
     pageInfo.innerHTML = `Page ${currentPage} of ${pageNeeded} | ${totalResult} `
-    if (currentPage == 1){
+    if (currentPage == 1) {
         prevBtn.disabled = true
-    } else{
+    } else {
         prevBtn.disabled = false
     }
-    if (currentPage == pageNeeded){
+    if (currentPage == pageNeeded) {
         nextBtn.disabled = true
-    } else{
+    } else {
         nextBtn.disabled = false
     }
 }
