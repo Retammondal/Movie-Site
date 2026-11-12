@@ -1,22 +1,56 @@
-/* HTML: <div class="loader"></div> */
-.loader {
-  width: fit-content;
-  font-weight: bold;
-  font-family: monospace;
-  font-size: 30px;
-  background:linear-gradient(90deg,#000 50%,#0000 0) right/200% 100%;
-  animation: l21 2s infinite linear;
-}
-.loader::before {
-  content :"Loading...";
-  color: #0000;
-  padding: 0 5px;
-  background: inherit;
-  background-image: linear-gradient(90deg,#fff 50%,#000 0);
-  -webkit-background-clip:text;
-          background-clip:text;
+:root {
+    color-scheme: dark;
 }
 
-@keyframes l21{
-  100%{background-position: left}
+body {
+    background-image: radial-gradient(ellipse at 50% -15%, rgba(109, 40, 217, 0.17), transparent 42%);
+}
+
+/* Dynamically injected movie cards inside #movieHub */
+#movieHub > div:not(.col-span-full) {
+    min-width: 0;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    border-radius: 12px;
+    background: linear-gradient(180deg, #171725, #101019);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.14);
+    transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
+}
+
+@media (min-width: 640px) {
+    #movieHub > div:not(.col-span-full) {
+        border-radius: 15px;
+    }
+}
+
+#movieHub > div:not(.col-span-full):hover {
+    transform: translateY(-5px);
+    border-color: rgba(167, 139, 250, 0.42);
+    box-shadow: 0 16px 35px rgba(0, 0, 0, 0.28), 0 0 24px rgba(124, 58, 237, 0.08);
+}
+
+#movieHub > div:not(.col-span-full) img {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 2 / 3;
+    object-fit: cover;
+}
+
+#movieHub > div:not(.col-span-full) h3 {
+    color: #f5f3ff;
+    line-height: 1.35;
+}
+
+#movieHub > div:not(.col-span-full) p {
+    color: #a1a1b5;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+    }
 }

@@ -7,44 +7,72 @@ const prevBtn = document.querySelector("#prevBtn")
 const nextBtn = document.querySelector("#nextBtn")
 const pageInfo = document.querySelector("#pageInfo")
 
+const filterForm = document.querySelector("#filterForm")            // Filters containing Form
+const yearFilter = document.querySelector("#yearFilter")
+const typeFilter = document.querySelector("#typeFilter")
+
+const noFilters = document.querySelector("#noFilters")
 const activeFilters = document.querySelector("#activeFilters")
-const filterSection = document.querySelector("#filterSection")      // Type and Year Filter containing Div
 
 const filterTags = document.querySelector("#filterTags")            // Filtered values containing div
 const showYearFilter = document.querySelector("#showYearFilter")
 const showTypeFilter = document.querySelector("#showTypeFilter")
 
+const resetFilterBtn = document.querySelector("#resetFiltersBtn")
+
 
 let totalResult = 0
 let currentPage = 1
 let currentQuery = null
-let currentType = null
-let currentYear = null
+let currentType = "all"
+let currentYear = "all"
+
+function filterButton() {
+    if (currentYear == "all" && currentType == "all") {
+        noFilters.classList.remove("hidden")
+        activeFilters.classList.add("hidden")
+        resetFilterBtn.classList.add("hidden")
+    } else {
+        noFilters.classList.add("hidden")
+        activeFilters.classList.remove("hidden")
+        resetFilterBtn.classList.remove("hidden")
+    }
+
+    showYearFilter.textContent = currentYear;
+    showYearFilter.classList.toggle("hidden", currentYear === "all");
+
+    showTypeFilter.textContent = currentType;
+    showTypeFilter.classList.toggle("hidden", currentType === "all");
+}
 
 movieForm.addEventListener("submit", (e) => {
     e.preventDefault();
 
-    currentPage = 1
-    let query = movieInput.value.trim();
+    let query = movieInput.value.trim();     // query => Movie Inputs Value
     if (!query) {                            // ? Why this? -- to stop the function and not run unnecessarily for null data
         movieHub.innerHTML = `
-            <div class="col-span-full text-center py-12">
-                <p class="text-yellow-400 text-lg font-semibold">
-                    Please enter a movie name.
-                </p>
-            </div>
+        <div class="col-span-full text-center py-12">
+        <p class="text-yellow-400 text-lg font-semibold">
+        Please enter a movie name.
+        </p>
+        </div>
         `;
         movieInput.focus()
         return
     }
-    // console.log(query);
-    currentQuery = query
-    activeFilters.classList.add("hidden")
+
+    currentPage = 1                         // why? => whenever we are doing new search currentPage will be 1
+    currentQuery = query                    // why we are storing this query? => To use this same data in Filters
+
+
     console.log(filterTags);
 
-    typeFilter.classList.remove("hidden")
-    yearFilter.classList.remove("hidden")
-    searchMovies(query);
+    // typeFilter.classList.remove("hidden")
+    // yearFilter.classList.remove("hidden")
+    console.log(currentQuery, currentPage, currentType, currentYear);
+    searchMovies(currentQuery, currentPage, currentType, currentYear);
+    filterButton();
+
 })
 
 prevBtn.addEventListener('click', (e) => {
@@ -56,43 +84,33 @@ nextBtn.addEventListener("click", (e) => {
     searchMovies(currentQuery, currentPage + 1, currentType, currentYear)
 })
 
-filterSection.addEventListener('change', (e) => {
-    if (!currentQuery) return;
+filterForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
 
-    const yearFilter = e.target.closest('#yearFilter')
-    const typeFilter = e.target.closest('#typeFilter')
+    if (!currentQuery) return;                          // Optimisation
 
-    currentPage = 1
-
-    activeFilters.classList.remove("hidden")
-
-
-    if (yearFilter) {
-        const year = yearFilter.value
-        currentYear = year
-
-        showYearFilter.textContent = year || "";
-        showYearFilter.classList.toggle("hidden", !year)
-    } 
-
-    if (typeFilter) {
-        const type = typeFilter.value
-        currentType = type
-
-        showTypeFilter.textContent = type || "";
-        showTypeFilter.classList.toggle("hidden", !type)
-    } 
-    
-    if (!currentYear && !currentType){
-        activeFilters.classList.add("hidden")
-    }
+    currentPage = 1                                     // Reset page to 1 when filter changes
+    currentYear = yearFilter.value;                      // year value from Input
+    currentType = typeFilter.value;                      // type value from Input
+    console.log(currentQuery, currentPage, currentYear, currentType);
 
     searchMovies(currentQuery, currentPage, currentType, currentYear)
+    filterButton();
 })
 
 
+resetFilterBtn.addEventListener("click", ()=>{
+    currentType = "all";
+    currentYear = "all";
+    currentPage = 1;
+    searchMovies(currentQuery, currentPage, currentType, currentYear)
+    filterButton();
+})
 
-async function searchMovies(movieName, page = 1, type = null, year) {
+
+// * searchMovies --> Function which takes input MovieName,page,type,year --> it will give result by API fetch based on that..
+async function searchMovies(movieName, page = 1, type = null, year = null) {
     try {
         // Given Here Tailwind Default rounding loading animmation
         movieHub.innerHTML = `
@@ -101,7 +119,9 @@ async function searchMovies(movieName, page = 1, type = null, year) {
             <p class="text-gray-400">Finding your movies...</p>
         </div>
         `
-        let response = await fetch(`https://www.omdbapi.com/?apikey=3c8289a9&s=${movieName}&page=${page}${type ? `&type=${type}` : ""}${year ? `&y=${year}` : ""}`)
+        const typeParam = type && type !== "all" ? `&type=${type}` : "";
+        const yearParam = year && year !== "all" ? `&y=${year}` : "";
+        let response = await fetch(`https://www.omdbapi.com/?apikey=3c8289a9&s=${movieName}&page=${page}${typeParam}${yearParam}`);
         // check if the http error 404/500
         if (!response.ok) {
             throw new Error(`Http Error! Status: ${response.status}`)
@@ -198,15 +218,15 @@ function displayMovies(data) {
 
 }
 
-// Want to Give Event Listener to each div...Use concept of Event Listener 
-movieHub.addEventListener('click', (e) => {
-    e.stopPropagation();
-    const movieCard = e.target.closest(".movie-card")
+// * Want to Give Event Listener to each div...Use concept of Event Listener 
+// movieHub.addEventListener('click', (e) => {
+//     e.stopPropagation();
+//     const movieCard = e.target.closest(".movie-card")
 
-    const imdbID = movieCard.dataset.imdbID
-    console.log(imdbID);
-    location.href = `movie-details.html?id=${imdbID}`
-})
+//     const imdbID = movieCard.dataset.imdbID
+//     console.log(imdbID);
+//     location.href = `movie-details.html?id=${imdbID}`
+// })
 
 
 
