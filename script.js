@@ -19,6 +19,7 @@ const showYearFilter = document.querySelector("#showYearFilter")
 const showTypeFilter = document.querySelector("#showTypeFilter")
 
 const resetFilterBtn = document.querySelector("#resetFiltersBtn")
+const clearInputBtn = document.querySelector("#clearInputBtn")
 
 
 let totalResult = 0
@@ -26,6 +27,11 @@ let currentPage = 1
 let currentQuery = null
 let currentType = "all"
 let currentYear = "all"
+
+clearInputBtn.addEventListener('click',(e)=>{
+    movieInput.value = '';
+    movieInput.focus();
+})
 
 function filterButton() {
     if (currentYear == "all" && currentType == "all") {
